@@ -568,6 +568,17 @@ document.addEventListener("DOMContentLoaded", () => {
           </div>
         `
         }
+        <div class="share-container">
+          <button class="share-button" data-activity="${name}" aria-label="Share this activity" title="Share this activity">
+            <span class="share-icon">🔗</span> Share
+          </button>
+          <div class="share-dropdown hidden" data-activity="${name}">
+            <button class="share-option copy-link" data-activity="${name}">📋 Copy Link</button>
+            <a class="share-option share-email" href="#" data-activity="${name}">✉️ Email</a>
+            <a class="share-option share-twitter" href="#" target="_blank" rel="noopener noreferrer" data-activity="${name}">𝕏 Twitter</a>
+            <a class="share-option share-facebook" href="#" target="_blank" rel="noopener noreferrer" data-activity="${name}">📘 Facebook</a>
+          </div>
+        </div>
       </div>
     `;
 
@@ -587,8 +598,83 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     }
 
+    // Add share button functionality
+    setupShareButtons(activityCard, name, details);
+
     activitiesList.appendChild(activityCard);
   }
+
+  // Build a shareable URL for a given activity name
+  function getActivityShareUrl(activityName) {
+    const url = new URL(window.location.href);
+    url.search = new URLSearchParams({ activity: activityName }).toString();
+    return url.toString();
+  }
+
+  // Build a share text for a given activity
+  function getActivityShareText(name, description) {
+    return `Check out this activity: ${name} - ${description}`;
+  }
+
+  // Set up share button dropdown for an activity card
+  function setupShareButtons(card, name, details) {
+    const shareButton = card.querySelector(".share-button");
+    const shareDropdown = card.querySelector(".share-dropdown");
+
+    if (!shareButton || !shareDropdown) return;
+
+    // Toggle dropdown on share button click
+    shareButton.addEventListener("click", (event) => {
+      event.stopPropagation();
+
+      // Close any other open dropdowns
+      document.querySelectorAll(".share-dropdown:not(.hidden)").forEach((d) => {
+        if (d !== shareDropdown) d.classList.add("hidden");
+      });
+
+      shareDropdown.classList.toggle("hidden");
+
+      if (!shareDropdown.classList.contains("hidden")) {
+        const shareUrl = getActivityShareUrl(name);
+        const shareText = getActivityShareText(name, details.description);
+
+        // Set up Copy Link
+        const copyBtn = shareDropdown.querySelector(".copy-link");
+        copyBtn.onclick = (e) => {
+          e.stopPropagation();
+          navigator.clipboard.writeText(shareUrl).then(() => {
+            copyBtn.textContent = "✅ Copied!";
+            setTimeout(() => {
+              copyBtn.textContent = "📋 Copy Link";
+            }, 2000);
+          }).catch(() => {
+            copyBtn.textContent = "📋 Copy Link";
+          });
+        };
+
+        // Set up Email share
+        const emailLink = shareDropdown.querySelector(".share-email");
+        const emailSubject = encodeURIComponent(`Join me for: ${name}`);
+        const emailBody = encodeURIComponent(`${shareText}\n\nLearn more and sign up here: ${shareUrl}`);
+        emailLink.href = `mailto:?subject=${emailSubject}&body=${emailBody}`;
+
+        // Set up Twitter share
+        const twitterLink = shareDropdown.querySelector(".share-twitter");
+        twitterLink.href = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(shareUrl)}`;
+
+        // Set up Facebook share
+        const facebookLink = shareDropdown.querySelector(".share-facebook");
+        facebookLink.href = `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(shareUrl)}`;
+      }
+    });
+  }
+
+  // Close share dropdowns when clicking elsewhere
+  document.addEventListener("click", () => {
+    document.querySelectorAll(".share-dropdown:not(.hidden)").forEach((d) => {
+      d.classList.add("hidden");
+    });
+  });
 
   // Event listeners for search and filter
   searchInput.addEventListener("input", (event) => {
