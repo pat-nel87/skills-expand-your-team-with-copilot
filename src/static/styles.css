@@ -32,6 +32,21 @@
   --info-light: #d1ecf1;
 }
 
+/* Dark mode overrides */
+[data-theme="dark"] {
+  --background: #121212;
+  --surface: #1e1e1e;
+  --text-primary: #e0e0e0;
+  --text-secondary: #a0a0a0;
+  --border: #333333;
+  --border-light: #2a2a2a;
+  --border-focus: #444444;
+  --success-light: #1b3a1c;
+  --warning-light: #3a2a00;
+  --error-light: #3a1010;
+  --info-light: #0a2025;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -682,11 +697,14 @@ footer {
   }
 }
 
-/* User controls in header */
-#user-controls {
+/* Header controls row for toggle + user status */
+#header-controls {
   position: absolute;
   top: 10px;
   right: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
 #user-status {
@@ -733,4 +751,50 @@ footer {
 
 #logout-button:hover {
   background-color: rgba(255, 255, 255, 0.3);
+}
+
+/* Dark mode toggle button */
+#dark-mode-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 50%;
+  font-size: 1.1rem;
+  transition: background-color 0.2s;
+  cursor: pointer;
+}
+
+#dark-mode-toggle:hover {
+  background-color: rgba(255, 255, 255, 0.35);
+}
+
+/* Dark mode: activity tag override */
+[data-theme="dark"] .activity-tag {
+  background: #2c2f5b;
+  color: #8c9eff;
+}
+
+/* Dark mode: search input */
+[data-theme="dark"] .search-box input {
+  background-color: var(--surface);
+  color: var(--text-primary);
+  border-color: var(--border);
+}
+
+/* Dark mode: modal */
+[data-theme="dark"] .modal-content {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+/* Dark mode: form inputs */
+[data-theme="dark"] input[type="text"],
+[data-theme="dark"] input[type="email"],
+[data-theme="dark"] input[type="password"] {
+  background-color: #2a2a2a;
+  color: var(--text-primary);
+  border-color: var(--border);
 }
